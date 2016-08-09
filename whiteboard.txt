@@ -29,6 +29,7 @@ two phases.
       +--[juliette-delta]----------------------------
       | NETCONF (<edit-config>)
       | (Syntactic validation) [2]
+      | System-defined data rewrites [13]
       +------------------------------
        /
 +=[juliette]+
@@ -36,11 +37,12 @@ two phases.
 +===========+
        \
       +--[kilo-delta]----------------------------
-      | <commit-config> [4]
+      | "commit" operation [4]
+      | - "best effort" option might result in removal of invalid config
       +------------------------------
        /
 +==[kilo]===+
-|           |
+| aka "running"
 +===========+
        \
       +--[lima-delta]---------------------------
@@ -117,9 +119,9 @@ should have priority against automation-based data.
 in dealing with the "real world", we must admit their existence and
 fit them into our world view.
 
-[4] While <commit-config> is only an operation if #candidate is
-supported, we can view it as an implicit operation at the end of each
-<edit-config> operation on the running datastore.
+[4] The commit operation may be either the <commit-config> operation
+if #candidate is supported, or the implicit operation at the end of
+each <edit-config> operation on the running datastore.
 
 [5] This datastore contains the "intended" configuration that the user
 intends to be used.  This remains a bit of a "Rorschach" term, but
@@ -150,6 +152,10 @@ that gives "instructions" to the device.
 write all this up, it might be better to view this as a completely
 distinct datastore rather than a set of operations performed on a
 single stream of data.
+
+[13] Data may be rewritten on input, for example converting any
+plaintext password values into encrypted values, discarding the
+original values.
 
 ----------------------
 
