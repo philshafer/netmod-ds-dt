@@ -1,0 +1,175 @@
+Greetings Design team members,
+
+It's finally time to kick off our Design Team.  The membership is
+locked and closed, the mailing list set and (hopefully) working, and
+we've had a decent break to allow ideas to cook a bit.
+
+As a means of review, I'm reproducing our work from the whiteboard at
+Wednesday's meeting.  This represents the lifecycle of data within a
+device, and I've drawn "====" boxes as "data" with "----" boxes as
+the operations that are performed on that data to move it to the next
+step in the lifecycle.  Hopefully that's clear.  Notes follow.
+
+-------------------
+
+      +------------------------------
+      | Human-based Config (potentially empty) [1]
+      +------------------------------
+       /
++=======+
+|       |
++=======+
+       \
+      +------------------------------
+      | ZTP
+      +------------------------------
+       /
++=======+
+|       |
++=======+
+       \
+      +------------------------------
+      | NETCONF (<edit-config>)
+      | (Syntactic validation) [2]
+      | + System controlled (explicit) data
+      +------------------------------
+       /
++=======+
+|       |
++=======+
+       \
+      +------------------------------
+      | <commit-config> [4]
+      +------------------------------
+       /
++=======+
+|       |
++=======+
+       \
+      +------------------------------
+      | - remove inactive
+      | + expand any template/group mechanism [3]
+      +------------------------------
+       /
++=======+
+| intended configuration [5]
++=======+
+       \
+      +------------------------------
+      | Semantic validation
+      | - commit-time system-controlled data
+      +------------------------------
+       /
++=======+
+| post validation [6]
++=======+
+       \
+      +------------------------------
+      | remove data for missing hardware ("ephemeral interfaces" [7])
+      | add system-controlled implicit data
+      +------------------------------
+       /
++=======+
+| system adjusted aka "applied" [8]
++=======+
+       \
+      +------------------------------
+      | merge ephemeral database
+      +------------------------------
+       /
++=======+
+| [9]   |
++=======+
+       \
+      +------------------------------
+      | add data learned from DHCP, radius, 802.1x, etc
+      +------------------------------
+       /
++=======+
+| "complete instructions" [10]
++=======+
+       \
+      +------------------------------
+      | replace config=true nodes with "current" values  [11]
+      +------------------------------
+       /
++=======+
+| yankee [12]
++=======+
+       \
+      +------------------------------
+      | add config=false" nodes
+      +------------------------------
+       /
++=======+
+| zulu aka "opstate"
++=======+
+
+
+------------------------------------------------------------
+
+Notes:
+
+[1] Called out to allow us to think about how human-contributed config
+should have priority against automation-based data.
+
+[2] Edit-config payloads are syntactically checked during processing.
+
+[3] Such mechanisms are completely outside the spec of NETCONF, but we
+in dealing with the "real world", we must admit their existence and
+fit them into our world view.
+
+[4] While <commit-config> is only an operation if #candidate is
+supported, we can view it as an implicit operation at the end of each
+<edit-config> operation on the running datastore.
+
+[5] This datastore contains the "intended" configuration that the user
+intends to be used.  This remains a bit of a "Rorschach" term, but
+folks seem to stick with it regardless.
+
+[6] The "post validation" datastore represents the contents of
+"running" after a <commit-config> operation (if #candidate) or an
+<edit-config> operation on the running datastore.
+
+[7] "ephemeral interfaces" is the term we've used for these sort of
+"pre-provisioned" interface configurations in the past, thought this
+term becomes overloaded with the introduction of "ephemeral
+datastores".
+
+[8] Again, the "applied" configuration term is a bit fuzzy, but seems
+too sticky to remove.  "system adjusted" has less fuzz, but also less
+curb appeal.
+
+[9] There was no real consensus on the need to distinguish data gained
+from the ephemeral database from that gained from mechanisms like
+DHCP, etc.  But IMHO the fact that ephemeral databases are "our's" and
+the rest are not means that we need to call them out specifically.
+
+[10] New term meant to represent that outcome of all the mechanisms
+that gives "instructions" to the device.
+
+[11] This description, while accurate, is not completely clear.  As we
+write all this up, it might be better to view this as a completely
+distinct datastore rather than a set of operations performed on a
+single stream of data.
+
+[12] We wanted meaningless names for the phases.  "zulu" and "yankee"
+are the last two phases.
+
+----------------------
+
+So we need to perform the following tasks:
+
+(a) converge on a world view
+(b) agree on terminology
+(c) decide which data phases need to be externally visible
+(d) create a mechanism to allow devices to describe which of those
+    can be accessed on this particular device
+(e) write it up
+
+I don't think we're that far apart on (a) and (b), so let's discuss
+those first off.  Please send your comments on the above text and
+let's see where points of contention exist.
+
+Thanks,
+ Phil
