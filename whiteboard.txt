@@ -1,109 +1,107 @@
-Greetings Design team members,
+This represents the lifecycle of data within a device, and I've
+drawn "====" boxes as "data" with "----" boxes as the operations
+that are performed on that data to move it to the next step in the
+lifecycle.  Hopefully that's clear.  Notes follow.
 
-It's finally time to kick off our Design Team.  The membership is
-locked and closed, the mailing list set and (hopefully) working, and
-we've had a decent break to allow ideas to cook a bit.
-
-As a means of review, I'm reproducing our work from the whiteboard at
-Wednesday's meeting.  This represents the lifecycle of data within a
-device, and I've drawn "====" boxes as "data" with "----" boxes as
-the operations that are performed on that data to move it to the next
-step in the lifecycle.  Hopefully that's clear.  Notes follow.
+We wanted meaningless names for the phases, so we're using phonetic
+alphabet names/codes.  For example, "zulu" and "yankee" are the last
+two phases.
 
 -------------------
 
-      +------------------------------
+      +--[hotel-delta]-----------------------------
       | Human-based Config (potentially empty) [1]
-      +------------------------------
-       /
-+=======+
-|       |
-+=======+
-       \
-      +------------------------------
-      | ZTP
-      +------------------------------
-       /
-+=======+
-|       |
-+=======+
-       \
-      +------------------------------
-      | NETCONF (<edit-config>)
-      | (Syntactic validation) [2]
       | + System controlled (explicit) data
       +------------------------------
        /
-+=======+
-|       |
-+=======+
++==[hotel]==+
+|           |
++===========+
        \
+      +--[india-delta]----------------------------
+      | Zero-Touch Provisioning (ZTP)
       +------------------------------
+       /
++==[india]==+
+|           |
++===========+
+       \
+      +--[juliette-delta]----------------------------
+      | NETCONF (<edit-config>)
+      | (Syntactic validation) [2]
+      +------------------------------
+       /
++=[juliette]+
+|           |
++===========+
+       \
+      +--[kilo-delta]----------------------------
       | <commit-config> [4]
       +------------------------------
        /
-+=======+
-|       |
-+=======+
++==[kilo]===+
+|           |
++===========+
        \
-      +------------------------------
+      +--[lima-delta]---------------------------
       | - remove inactive
       | + expand any template/group mechanism [3]
+      | + add system-controlled implicit data
       +------------------------------
        /
-+=======+
-| intended configuration [5]
-+=======+
++==[lima]===+
+|           |
++===========+
        \
-      +------------------------------
+      +--[mike-delta]----------------------------
       | Semantic validation
-      | - commit-time system-controlled data
+      | + commit-time system-controlled data
       +------------------------------
        /
-+=======+
++==[mike]===+
 | post validation [6]
-+=======+
+| aka "intended configuration" [5]
++===========+
        \
-      +------------------------------
-      | remove data for missing hardware ("ephemeral interfaces" [7])
-      | add system-controlled implicit data
+      +--[november-delta----------------
+      | - remove data for missing hardware ("ephemeral interfaces" [7])
       +------------------------------
        /
-+=======+
++==[november]=+
 | system adjusted aka "applied" [8]
-+=======+
++=============+
        \
-      +------------------------------
+      +--[oscar-delta]----------------------------
       | merge ephemeral database
       +------------------------------
        /
-+=======+
++==[oscar]==+
 | [9]   |
-+=======+
++===========+
        \
-      +------------------------------
+      +--[papa-delta]----------------------------
       | add data learned from DHCP, radius, 802.1x, etc
       +------------------------------
        /
-+=======+
++==[papa]===+
 | "complete instructions" [10]
-+=======+
++===========+
        \
-      +------------------------------
+      +--[yankee-delta]----------------------------
       | replace config=true nodes with "current" values  [11]
       +------------------------------
        /
-+=======+
-| yankee [12]
-+=======+
++==[yankee]=+
+|           |
++===========+
        \
-      +------------------------------
+      +--[zulu-delta]---------------------------
       | add config=false" nodes
       +------------------------------
        /
-+=======+
-| zulu aka "opstate"
-+=======+
++==[zulu]===+
+| aka "opstate"
++===========+
 
 
 ------------------------------------------------------------
@@ -153,9 +151,6 @@ write all this up, it might be better to view this as a completely
 distinct datastore rather than a set of operations performed on a
 single stream of data.
 
-[12] We wanted meaningless names for the phases.  "zulu" and "yankee"
-are the last two phases.
-
 ----------------------
 
 So we need to perform the following tasks:
@@ -166,10 +161,3 @@ So we need to perform the following tasks:
 (d) create a mechanism to allow devices to describe which of those
     can be accessed on this particular device
 (e) write it up
-
-I don't think we're that far apart on (a) and (b), so let's discuss
-those first off.  Please send your comments on the above text and
-let's see where points of contention exist.
-
-Thanks,
- Phil
