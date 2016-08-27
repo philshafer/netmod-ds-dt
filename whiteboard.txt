@@ -9,27 +9,14 @@ two phases.
 
 -------------------
 
-      +--[hotel-delta]-----------------------------
-      | Human-based Config (potentially empty) [1]
-      | + System controlled (explicit) data
-      +------------------------------
-       /
-+==[hotel]==+
-|           |
-+===========+
-       \
-      +--[india-delta]----------------------------
-      | Zero-Touch Provisioning (ZTP)
-      +------------------------------
-       /
 +==[india]==+
 |           |
 +===========+
        \
       +--[juliette-delta]----------------------------
-      | NETCONF (<edit-config>)
-      | (Syntactic validation) [2]
-      | System-defined data rewrites [13]
+      | + NETCONF/RESTCONF operations (<edit-config>)
+      | - (Syntactic validation) [2]
+      | + System-defined data rewrites [13]
       +------------------------------
        /
 +=[juliette]+
@@ -42,7 +29,7 @@ two phases.
       +------------------------------
        /
 +==[kilo]===+
-| aka "running"
+|           |
 +===========+
        \
       +--[lima-delta]---------------------------
@@ -58,11 +45,11 @@ two phases.
       +--[mike-delta]----------------------------
       | Semantic validation
       | + commit-time system-controlled data
+      | - remove invalid data
       +------------------------------
        /
 +==[mike]===+
-| post validation [6]
-| aka "intended configuration" [5]
+| post validation [5] [6]
 +===========+
        \
       +--[november-delta----------------
@@ -70,7 +57,7 @@ two phases.
       +------------------------------
        /
 +==[november]=+
-| system adjusted aka "applied" [8]
+| system adjusted [8]
 +=============+
        \
       +--[oscar-delta]----------------------------
@@ -82,7 +69,7 @@ two phases.
 +===========+
        \
       +--[papa-delta]----------------------------
-      | add data learned from DHCP, radius, 802.1x, etc
+      | add data learned from other sources (DHCP, RADIUS, 802.1x, etc)
       +------------------------------
        /
 +==[papa]===+
@@ -110,10 +97,10 @@ two phases.
 
 Notes:
 
-[1] Called out to allow us to think about how human-contributed config
-should have priority against automation-based data.
+[1] [unused]
 
 [2] Edit-config payloads are syntactically checked during processing.
+Anything that fails validation is discarded.
 
 [3] Such mechanisms are completely outside the spec of NETCONF, but we
 in dealing with the "real world", we must admit their existence and
@@ -123,22 +110,21 @@ fit them into our world view.
 if #candidate is supported, or the implicit operation at the end of
 each <edit-config> operation on the running datastore.
 
-[5] This datastore contains the "intended" configuration that the user
-intends to be used.  This remains a bit of a "Rorschach" term, but
-folks seem to stick with it regardless.
+[5] Originally labeled "intended configuration", that term remains a
+bit of a "Rorschach" term, but folks seem to stick with it regardless.
 
-[6] The "post validation" datastore represents the contents of
-"running" after a <commit-config> operation (if #candidate) or an
-<edit-config> operation on the running datastore.
+[6] The "post validation" datastore represents the product of a
+successful validation, where any invalid configuration has been
+removed.
 
 [7] "ephemeral interfaces" is the term we've used for these sort of
 "pre-provisioned" interface configurations in the past, thought this
 term becomes overloaded with the introduction of "ephemeral
 datastores".
 
-[8] Again, the "applied" configuration term is a bit fuzzy, but seems
-too sticky to remove.  "system adjusted" has less fuzz, but also less
-curb appeal.
+[8] This was originally labeled "applied", but again, the "applied
+configuration" term is a bit fuzzy, but seems too sticky to remove.
+"system adjusted" has less fuzz, but also less curb appeal.
 
 [9] There was no real consensus on the need to distinguish data gained
 from the ephemeral database from that gained from mechanisms like
